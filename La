@@ -45,9 +45,7 @@ local Tabs = {
     Main = Window:AddTab({ Title = "Main", Icon = "align-center" }),
     Troll = Window:AddTab({ Title = "Troll", Icon = "usb" }),
     StoreControl = Window:AddTab({ Title = "Store Control", Icon = "joystick" }),
-    Vote = Window:AddTab({ Title = "Vote", Icon = "check" }),
-    Buy = Window:AddTab({ Title = "Buy", Icon = "shopping-cart" }),
-    Settings = Window:AddTab({ Title = "Settings", Icon = "settings" })
+
 }
 
 Tabs.Main:AddButton({
