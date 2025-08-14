@@ -99,27 +99,6 @@ Tabs.StoreControl:AddButton({
         end
 })
 
-for i,v in pairs(Buttons:GetChildren()) do
-if v:FindFirstChild("Interact") and not table.find(deliveryitems, v.Name) and not table.find(storebtns, v.Name) then
-Tabs.Vote:AddButton({
-        Title = v.Name,
-        Callback = function()
-             Interact:FireServer(v)
-        end
-})
-end
-end
-
-for i,v in pairs(Buttons:GetChildren()) do
-if v:FindFirstChild("Interact") and table.find(deliveryitems, v.Name) then
-Tabs.Buy:AddButton({
-        Title = v.Name,
-        Callback = function()
-             Interact:FireServer(v)
-        end
-})
-end
-end
 
 Tabs.Troll:AddButton({
         Title = "Fling all items",
