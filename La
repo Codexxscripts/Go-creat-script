@@ -1,0 +1,243 @@
+repeat task.wait(0.25) until game:IsLoaded();
+getgenv().Image = "rbxassetid://89486144961689"; -- put a asset id in here to make it work
+getgenv().ToggleUI = "E" -- This where you can Toggle the Fluent ui library
+
+task.spawn(function()
+    if not getgenv().LoadedMobileUI == true then getgenv().LoadedMobileUI = true
+        local OpenUI = Instance.new("ScreenGui");
+        local ImageButton = Instance.new("ImageButton");
+        local UICorner = Instance.new("UICorner");
+        OpenUI.Name = "OpenUI";
+        OpenUI.Parent = game:GetService("CoreGui");
+        OpenUI.ZIndexBehavior = Enum.ZIndexBehavior.Sibling;
+        ImageButton.Parent = OpenUI;
+        ImageButton.BackgroundColor3 = Color3.fromRGB(105,105,105);
+        ImageButton.BackgroundTransparency = 0.8
+        ImageButton.Position = UDim2.new(0.9,0,0.1,0);
+        ImageButton.Size = UDim2.new(0,50,0,50);
+        ImageButton.Image = getgenv().Image;
+        ImageButton.Draggable = true;
+        ImageButton.Transparency = 1;
+        UICorner.CornerRadius = UDim.new(0,200);
+        UICorner.Parent = ImageButton;
+        ImageButton.MouseButton1Click:Connect(function()
+            game:GetService("VirtualInputManager"):SendKeyEvent(true,getgenv().ToggleUI,false,game);
+        end)
+    end
+end)
+
+game:GetService("CoreGui").RobloxGui["CoreScripts/NetworkPause"]:Destroy()
+wait(0.3)
+
+local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
+
+local Window = Fluent:CreateWindow({
+    Title = "Release Abyss Miner " .. Fluent.Version,
+    SubTitle = "by @Codexxscripts",
+    TabWidth = 160,
+    Size = UDim2.fromOffset(480, 360),
+    Acrylic = true, -- The blur may be detectable, setting this to false disables blur entirely
+    Theme = "Aqua",
+    MinimizeKey = Enum.KeyCode.E -- Used when theres no MinimizeKeybind
+})
+
+local Tabs = {
+    Main = Window:AddTab({ Title = "Main", Icon = "leaf" }),
+    Player = Window:AddTab({ Title = "Player", Icon = "skull" }),
+    Teleport = Window:AddTab({ Title = "Teleport", Icon = "car" }),
+    Visual = Window:AddTab({ Title = "Visual", Icon = "eye" })
+}
+
+local Options = Fluent.Options
+
+    Fluent:Notify({
+        Title = "Notification",
+        Content = "This is a notification",
+        SubContent = "SubContent", -- Optional
+        Duration = 5 -- Set to nil to make the notification not disappear
+    })
+
+
+local Toggle = Tabs.Main:AddToggle("Auto Sell", {Title = "Auto Sell", Default = true })
+
+    Toggle:OnChanged(function()
+print("Work Script")
+end)
+
+Tabs.Main:AddParagraph({
+        Title = "Work Auto mine,Auto Sell\nSecond line!",
+        Content = ""
+    })
+
+Tabs.Main:AddButton({
+        Title = "Rusty Pickaxe",
+        Description = "You should have it in your hands",
+        Callback = function()
+
+local HitBox = game:GetService("ReplicatedStorage").RemoteEvent.HitBox
+local SellAll = game:GetService("ReplicatedStorage").RemoteEvent.SellAllInventory
+local Layer1 = workspace.Map["Layer 1"]
+local NPC = Layer1.Npcs["Rei ' The professer"]
+
+while task.wait(0.1) do
+    for _, stone in pairs(Layer1:GetChildren()) do
+        if stone:FindFirstChild("Amount") then
+            for _ = 1, 30 do
+                HitBox:FireServer(3, "Standard", false, "Rusty Pickaxe", 1)
+                task.wait(0.03)
+            end
+        end
+    end
+    if NPC and NPC:FindFirstChild("Rei") then
+
+        SellAll:FireServer(NPC.Rei, NPC.Rei.HumanoidRootPart.Dialogue)
+    end
+end
+end})
+
+Tabs.Main:AddButton({
+        Title = "Iron Pickaxe",
+        Description = "You should have it in your hands",
+        Callback = function()
+
+local HitBox = game:GetService("ReplicatedStorage").RemoteEvent.HitBox
+local SellAll = game:GetService("ReplicatedStorage").RemoteEvent.SellAllInventory
+local Layer1 = workspace.Map["Layer 1"]
+local NPC = Layer1.Npcs["Rei ' The professer"]
+
+while task.wait(0.1) do
+    for _, stone in pairs(Layer1:GetChildren()) do
+        if stone:FindFirstChild("Amount") then
+            for _ = 1, 30 do
+                HitBox:FireServer(10, "Standard", false, "Iron Pickaxe", 1)
+                task.wait(0.03)
+            end
+        end
+    end
+    if NPC and NPC:FindFirstChild("Rei") then
+
+        SellAll:FireServer(NPC.Rei, NPC.Rei.HumanoidRootPart.Dialogue)
+    end
+end
+end})
+
+
+local Slider = Tabs.Player:AddSlider("Walk Speed", {
+        Title = "Walk Speed",
+        Description = "Change speed Player",
+        Default = 16,
+        Min = 16,
+        Max = 1000,
+        Rounding = 1,
+        Callback = function(Value)
+            game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value
+        end
+    })
+
+local Slider = Tabs.Player:AddSlider("Jump Power", {
+        Title = "Jump Power",
+        Description = "Change jump Player",
+        Default = 50,
+        Min = 50,
+        Max = 1000,
+        Rounding = 1,
+        Callback = function(Value)
+            game.Players.LocalPlayer.Character.Humanoid.JumpPower = Value
+       end
+    })
+
+Tabs.Player:AddButton({
+        Title = "No full Damage",
+        Description = "",
+        Callback = function()
+
+
+local rs = game:GetService("RunService")
+local hb = rs.Heartbeat
+local rsd = rs.RenderStepped
+local lp = game.Players.LocalPlayer
+local z = Vector3.zero
+local function f(c)
+    local r = c:WaitForChild("HumanoidRootPart")
+    if r then
+        local con
+        con = hb:Connect(function()
+            if not r.Parent then
+                con:Disconnect()
+            end
+            local v = r.AssemblyLinearVelocity
+            r.AssemblyLinearVelocity = z
+            rsd:Wait()
+            r.AssemblyLinearVelocity = v
+        end)
+    end
+end
+f(lp.Character)
+lp.CharacterAdded:Connect(f)
+end})
+
+Tabs.Player:AddButton({
+        Title = "Fly",
+        Description = "",
+        Callback = function()
+loadstring(game:HttpGet(('https://pastefy.app/M0N30XXG/raw'),true))()
+
+end})
+
+Tabs.Teleport:AddButton({
+        Title = "Shop #1",
+        Description = "",
+        Callback = function()
+
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(31.472213745117188, 13.826899528503418, -17.74330711364746)
+
+end})
+
+Tabs.Teleport:AddButton({
+        Title = "Shop #2",
+        Description = "",
+        Callback = function()
+
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(222.27378845214844, -156.92575073242188, -45.67597961425781)
+
+end})
+
+Tabs.Visual:AddParagraph({
+        Title = "This menu includes esp",
+        Content = ""
+    })
+
+Tabs.Visual:AddButton({
+        Title = "Esp Players",
+        Description = "",
+        Callback = function()
+
+loadstring(game:HttpGet('https://raw.githubusercontent.com/Lucasfin000/SpaceHub/main/UESP'))()
+
+end})
+
+Tabs.Visual:AddButton({
+        Title = "Esp Npc",
+        Description = "",
+        Callback = function()
+
+local function applyHighlight(item)
+    if item:IsA("Humanoid") then
+        local highlight = Instance.new("Highlight")
+        local parent = item.Parent
+        if parent then
+            local plr = game.Players:GetPlayerFromCharacter(parent)
+            if not plr then
+                highlight.Parent = parent
+            end
+        end
+    end
+end
+
+for _, item in pairs(workspace:GetDescendants()) do
+    applyHighlight(item)
+end
+
+workspace.DescendantAdded:Connect(applyHighlight)
+
+end})
