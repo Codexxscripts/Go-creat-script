@@ -42,202 +42,121 @@ local Window = Fluent:CreateWindow({
 })
 
 local Tabs = {
-    Main = Window:AddTab({ Title = "Main", Icon = "leaf" }),
-    Player = Window:AddTab({ Title = "Player", Icon = "skull" }),
-    Teleport = Window:AddTab({ Title = "Teleport", Icon = "car" }),
-    Visual = Window:AddTab({ Title = "Visual", Icon = "eye" })
+    Main = Window:AddTab({ Title = "Main", Icon = "align-center" }),
+    Troll = Window:AddTab({ Title = "Troll", Icon = "usb" }),
+    StoreControl = Window:AddTab({ Title = "Store Control", Icon = "joystick" }),
+    Vote = Window:AddTab({ Title = "Vote", Icon = "check" }),
+    Buy = Window:AddTab({ Title = "Buy", Icon = "shopping-cart" }),
+    Settings = Window:AddTab({ Title = "Settings", Icon = "settings" })
 }
 
-local Options = Fluent.Options
-
-    Fluent:Notify({
-        Title = "Notification",
-        Content = "This is a notification",
-        SubContent = "SubContent", -- Optional
-        Duration = 5 -- Set to nil to make the notification not disappear
-    })
-
-
-local Toggle = Tabs.Main:AddToggle("Auto Sell", {Title = "Auto Sell", Default = true })
-
-    Toggle:OnChanged(function()
-print("Work Script")
-end)
-
-Tabs.Main:AddParagraph({
-        Title = "Work Auto mine,Auto Sell\nSecond line!",
-        Content = ""
-    })
+Tabs.Main:AddButton({
+        Title = "Action Mod",
+        Description = "modify action speeds.",
+        Callback = function()
+            player.ActionStats.MoppingSpeed.Value = 0.01
+            player.ActionStats.RollingSpeed.Value = 0.01
+            player.ActionStats.CuttingSpeed.Value = 0.01
+        end
+})
 
 Tabs.Main:AddButton({
-        Title = "Rusty Pickaxe",
-        Description = "You should have it in your hands",
+        Title = "Unlock all aprons",
+        Description = "Unlock all aprons for free.",
         Callback = function()
+for i,v in pairs(Aprons:GetChildren()) do
+local args = {
+	"BuyApron",
+	{
+		Price = 0,
+		ApronName = v.Name,
+		Bowl = 0
+	}
+}
+CustomizationHandler:FireServer(unpack(args))
+end
+        end
+})
 
-local HitBox = game:GetService("ReplicatedStorage").RemoteEvent.HitBox
-local SellAll = game:GetService("ReplicatedStorage").RemoteEvent.SellAllInventory
-local Layer1 = workspace.Map["Layer 1"]
-local NPC = Layer1.Npcs["Rei ' The professer"]
+local storebtns = {"Open Store", "Close Store"}
+local deliveryitems = {"Vegetable", "Protein", "Dough", "Broth Base"}
 
-while task.wait(0.1) do
-    for _, stone in pairs(Layer1:GetChildren()) do
-        if stone:FindFirstChild("Amount") then
-            for _ = 1, 30 do
-                HitBox:FireServer(3, "Standard", false, "Rusty Pickaxe", 1)
-                task.wait(0.03)
+Tabs.StoreControl:AddButton({
+        Title = "Open Store",
+        Callback = function()
+            if Buttons:FindFirstChild("Open Store") then
+               Interact:FireServer(Buttons["Open Store"])
             end
         end
-    end
-    if NPC and NPC:FindFirstChild("Rei") then
+})
 
-        SellAll:FireServer(NPC.Rei, NPC.Rei.HumanoidRootPart.Dialogue)
-    end
-end
-end})
-
-Tabs.Main:AddButton({
-        Title = "Iron Pickaxe",
-        Description = "You should have it in your hands",
+Tabs.StoreControl:AddButton({
+        Title = "Close Store",
         Callback = function()
-
-local HitBox = game:GetService("ReplicatedStorage").RemoteEvent.HitBox
-local SellAll = game:GetService("ReplicatedStorage").RemoteEvent.SellAllInventory
-local Layer1 = workspace.Map["Layer 1"]
-local NPC = Layer1.Npcs["Rei ' The professer"]
-
-while task.wait(0.1) do
-    for _, stone in pairs(Layer1:GetChildren()) do
-        if stone:FindFirstChild("Amount") then
-            for _ = 1, 30 do
-                HitBox:FireServer(10, "Standard", false, "Iron Pickaxe", 1)
-                task.wait(0.03)
+            if Buttons:FindFirstChild("Close Store") then
+               Interact:FireServer(Buttons["Close Store"])
             end
         end
-    end
-    if NPC and NPC:FindFirstChild("Rei") then
+})
 
-        SellAll:FireServer(NPC.Rei, NPC.Rei.HumanoidRootPart.Dialogue)
-    end
-end
-end})
-
-
-local Slider = Tabs.Player:AddSlider("Walk Speed", {
-        Title = "Walk Speed",
-        Description = "Change speed Player",
-        Default = 16,
-        Min = 16,
-        Max = 1000,
-        Rounding = 1,
-        Callback = function(Value)
-            game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value
+for i,v in pairs(Buttons:GetChildren()) do
+if v:FindFirstChild("Interact") and not table.find(deliveryitems, v.Name) and not table.find(storebtns, v.Name) then
+Tabs.Vote:AddButton({
+        Title = v.Name,
+        Callback = function()
+             Interact:FireServer(v)
         end
-    })
-
-local Slider = Tabs.Player:AddSlider("Jump Power", {
-        Title = "Jump Power",
-        Description = "Change jump Player",
-        Default = 50,
-        Min = 50,
-        Max = 1000,
-        Rounding = 1,
-        Callback = function(Value)
-            game.Players.LocalPlayer.Character.Humanoid.JumpPower = Value
-       end
-    })
-
-Tabs.Player:AddButton({
-        Title = "No full Damage",
-        Description = "",
-        Callback = function()
-
-
-local rs = game:GetService("RunService")
-local hb = rs.Heartbeat
-local rsd = rs.RenderStepped
-local lp = game.Players.LocalPlayer
-local z = Vector3.zero
-local function f(c)
-    local r = c:WaitForChild("HumanoidRootPart")
-    if r then
-        local con
-        con = hb:Connect(function()
-            if not r.Parent then
-                con:Disconnect()
-            end
-            local v = r.AssemblyLinearVelocity
-            r.AssemblyLinearVelocity = z
-            rsd:Wait()
-            r.AssemblyLinearVelocity = v
-        end)
-    end
+})
 end
-f(lp.Character)
-lp.CharacterAdded:Connect(f)
-end})
+end
 
-Tabs.Player:AddButton({
-        Title = "Fly",
-        Description = "",
+for i,v in pairs(Buttons:GetChildren()) do
+if v:FindFirstChild("Interact") and table.find(deliveryitems, v.Name) then
+Tabs.Buy:AddButton({
+        Title = v.Name,
         Callback = function()
-loadstring(game:HttpGet(('https://pastefy.app/M0N30XXG/raw'),true))()
+             Interact:FireServer(v)
+        end
+})
+end
+end
 
-end})
-
-Tabs.Teleport:AddButton({
-        Title = "Shop #1",
-        Description = "",
+Tabs.Troll:AddButton({
+        Title = "Fling all items",
+        Description = "Fling all grabbable items.",
         Callback = function()
-
-game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(31.472213745117188, 13.826899528503418, -17.74330711364746)
-
-end})
-
-Tabs.Teleport:AddButton({
-        Title = "Shop #2",
-        Description = "",
-        Callback = function()
-
-game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(222.27378845214844, -156.92575073242188, -45.67597961425781)
-
-end})
-
-Tabs.Visual:AddParagraph({
-        Title = "This menu includes esp",
-        Content = ""
-    })
-
-Tabs.Visual:AddButton({
-        Title = "Esp Players",
-        Description = "",
-        Callback = function()
-
-loadstring(game:HttpGet('https://raw.githubusercontent.com/Lucasfin000/SpaceHub/main/UESP'))()
-
-end})
-
-Tabs.Visual:AddButton({
-        Title = "Esp Npc",
-        Description = "",
-        Callback = function()
-
-local function applyHighlight(item)
-    if item:IsA("Humanoid") then
-        local highlight = Instance.new("Highlight")
-        local parent = item.Parent
-        if parent then
-            local plr = game.Players:GetPlayerFromCharacter(parent)
-            if not plr then
-                highlight.Parent = parent
+            for i,v in pairs(grabbables:GetChildren()) do
+            DropItem:FireServer(v, Vector3.new(0, -500, 0))
             end
         end
-    end
-end
+})
 
-for _, item in pairs(workspace:GetDescendants()) do
-    applyHighlight(item)
-end
+Tabs.Troll:AddButton({
+        Title = "Void all items",
+        Description = "Void all grabbable items.",
+        Callback = function()
+            for i,v in pairs(grabbables:GetChildren()) do
+            DropItem:FireServer(v, Vector3.new(0, -100000000000000000000, 0))
+            end
+        end
+})
 
-workspace.DescendantAdded:Connect(applyHighlight)
+Tabs.Troll:AddButton({
+        Title = "ungrabbable all (permanent)",
+        Description = "ungrabbable all grabbable items.",
+        Callback = function()
+            for i,v in pairs(grabbables:GetChildren()) do
+            PickupItem:FireServer(v, Vector3.new(0, -100000000000000000000, 0))
+            end
+        end
+})
 
-end})
+Tabs.Troll:AddButton({
+        Title = "Drop all items",
+        Description = "Drop all grabbable items.",
+        Callback = function()
+            for i,v in pairs(grabbables:GetChildren()) do
+            DropItem:FireServer(v, Vector3.zero)
+            end
+        end
+})
